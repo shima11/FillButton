@@ -15,7 +15,11 @@ import UIKit
     @IBInspectable var subColor: UIColor = UIColor.white
     @IBInspectable var borderWidth: CGFloat = 1.0
     
-
+    @IBInspectable var touchDownScale: CGFloat = 0.9 // 押し込み時の縮小比率
+    
+    
+    var isFilled: Bool = false
+    
     override func draw(_ rect: CGRect) {
         print("draw rect")
     }
@@ -42,10 +46,8 @@ import UIKit
         layer.cornerRadius = radius
         layer.masksToBounds = true
         self.clipsToBounds = true
-        
         layer.borderColor = mainColor.cgColor
         layer.borderWidth = borderWidth
-        
         layer.backgroundColor = subColor.cgColor
         
         self.setTitleColor(mainColor, for: .normal)
@@ -53,10 +55,39 @@ import UIKit
         
     }
     
-    // タップしたとき
+    // タップ開始
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
-    
+        let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
+        scaleAnimation.toValue = touchDownScale
+        scaleAnimation.duration = 0.02
+        scaleAnimation.fillMode = kCAFillModeForwards
+        scaleAnimation.isRemovedOnCompletion = false
+        scaleAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        self.layer.add(scaleAnimation, forKey: "scaleAnimation")
+
+    }
+    // タップ終了
+    override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
+        super.touchesEnded(touches, with: event)
+        let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
+        scaleAnimation.toValue = 1.0/touchDownScale
+        scaleAnimation.duration = 0.02
+        scaleAnimation.fillMode = kCAFillModeForwards
+        scaleAnimation.isRemovedOnCompletion = false
+        scaleAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        self.layer.add(scaleAnimation, forKey: "scaleAnimation")
+        
+        if isFilled {
+            self.setTitleColor(mainColor, for: .normal)
+            layer.backgroundColor = UIColor.white.cgColor
+            isFilled = false
+        } else {
+            self.setTitleColor(UIColor.white, for: .normal)
+            layer.backgroundColor = mainColor.cgColor
+            isFilled = true
+        }
+        
     }
     
     // ハイライト時に色を反転させる
