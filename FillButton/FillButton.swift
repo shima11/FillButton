@@ -61,12 +61,14 @@ import UIKit
         let scaleAnimation = CABasicAnimation(keyPath: "transform.scale")
         scaleAnimation.toValue = touchDownScale
         scaleAnimation.duration = 0.02
+        scaleAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
+        // アニメーション後のframeを保つ
         scaleAnimation.fillMode = kCAFillModeForwards
         scaleAnimation.isRemovedOnCompletion = false
-        scaleAnimation.timingFunction = CAMediaTimingFunction(name: kCAMediaTimingFunctionEaseInEaseOut)
         self.layer.add(scaleAnimation, forKey: "scaleAnimation")
 
     }
+
     // タップ終了
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesEnded(touches, with: event)
